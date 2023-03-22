@@ -39,7 +39,7 @@ public enum DogType {
 
     final private String dogType;
 
-    public static DogType valueOfPaymentState(String dogType) {
+    public static DogType valueOfDogStatus(String dogType) {
         return Arrays.stream(values())
                 .filter(value -> value.dogType.equals(dogType))
                 .findAny()
