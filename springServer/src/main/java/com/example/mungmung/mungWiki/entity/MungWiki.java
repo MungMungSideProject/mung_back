@@ -3,12 +3,14 @@ package com.example.mungmung.mungWiki.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
+@Setter
 @Getter
 public class MungWiki {
 
@@ -24,8 +26,8 @@ public class MungWiki {
     private WikiDocument wikiDocument;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private MungWiki mungWiki;
+    private DogStatus dogStatus;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WikiImages> wikiImages= new ArrayList<>();
 }
