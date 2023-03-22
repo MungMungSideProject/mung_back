@@ -33,5 +33,10 @@ public class MungWikiController {
         return mungWikiService.registerWiki(request,images);
     }
 
+    @GetMapping("read/{dogType}")
+    public Map<String, Object> readWikiInfo(@PathVariable("dogType") String dogType){
+        DogType valueOfDogType = DogType.valueOfDogStatus(dogType);
 
+        return mungWikiService.readWikiInfo(valueOfDogType);
+    }
 }

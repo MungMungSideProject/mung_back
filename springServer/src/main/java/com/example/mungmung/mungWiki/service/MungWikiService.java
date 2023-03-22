@@ -14,4 +14,5 @@ public interface MungWikiService {
 
     String registerWiki(RegisterRequest request, List<MultipartFile> images);
 
+    Map<String,Object> readWikiInfo(DogType dogType);
 }

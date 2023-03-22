@@ -90,4 +90,57 @@ public class MungWikiServiceImpl implements MungWikiService {
     }
 
 
+    @Override
+    public Map<String, Object> readWikiInfo(DogType dogType) {
+        try {
+            Map<String, Object> returnData = new HashMap<>();
+
+            Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(dogType);
+
+            if (maybeMungWiki.isEmpty()) {
+                returnData.put("결과", "해당 견종은 아직 등록 되지 않았습니다");
+            } else {
+                MungWiki MungWikiByDogType = maybeMungWiki.get();
+
+                List<String> imagesNameList = setImageNameList(MungWikiByDogType.getWikiImages());
+                Long TotalStatus = calculateTotalStatus(MungWikiByDogType.getDogStatus());
+                returnData.put("sheddingLevel", MungWikiByDogType.getDogStatus().getSheddingLevel());
+                returnData.put("intelligenceLevel", MungWikiByDogType.getDogStatus().getIntelligenceLevel());
+                returnData.put("sociabilityLevel", MungWikiByDogType.getDogStatus().getSociabilityLevel());
+                returnData.put("activityLevel", MungWikiByDogType.getDogStatus().getActivityLevel());
+                returnData.put("indoorAdaptLevel", MungWikiByDogType.getDogStatus().getIndoorAdaptLevel());
+                returnData.put("documentation", MungWikiByDogType.getWikiDocument().getDocument());
+                returnData.put("totalStatus", TotalStatus);
+                returnData.put("imagesNameList", imagesNameList);
+
+            }
+            return returnData;
+
+        } catch (Exception e) {
+            throw e;
+        }
+
+    }
+
+    private Long calculateTotalStatus(DogStatus dogStatus){
+        Long totalStatus;
+        Long StatusSum = dogStatus.getActivityLevel() + dogStatus.getSociabilityLevel() + dogStatus.getSheddingLevel()
+                + dogStatus.getIntelligenceLevel() + dogStatus.getIndoorAdaptLevel();
+        System.out.println("StatusSum : " + StatusSum);
+
+        totalStatus = StatusSum / 5;
+        System.out.println("totalStatus : " + totalStatus);
+
+
+        return totalStatus;
+    }
+
+    private List<String> setImageNameList(List<WikiImages> wikiImages){
+
+        List<String> imageNameList = new ArrayList<>();
+        for (int i=0; i<= wikiImages.size(); i++){
+            imageNameList.set(i,wikiImages.get(i).getUploadImageName());
+        }
+        return imageNameList;
+    }
 }
