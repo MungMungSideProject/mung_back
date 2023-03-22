@@ -94,7 +94,6 @@ public class MungWikiServiceImpl implements MungWikiService {
         }
     }
 
-
     @Override
     public Map<String, Object> readWikiInfo(DogType dogType) {
         try {
@@ -127,8 +126,7 @@ public class MungWikiServiceImpl implements MungWikiService {
 
     }
 
-
-    private Long calculateTotalStatus(DogStatus dogStatus){
+    private Long calculateTotalStatus(DogStatus dogStatus) {
         Long totalStatus;
         Long StatusSum = dogStatus.getActivityLevel() + dogStatus.getSociabilityLevel() + dogStatus.getSheddingLevel()
                 + dogStatus.getIntelligenceLevel() + dogStatus.getIndoorAdaptLevel();
@@ -141,40 +139,38 @@ public class MungWikiServiceImpl implements MungWikiService {
         return totalStatus;
     }
 
-    private List<String> setImageNameList(List<WikiImages> wikiImages){
+    private List<String> setImageNameList(List<WikiImages> wikiImages) {
 
         List<String> imageNameList = new ArrayList<>();
-        for (int i=0; i<= wikiImages.size(); i++){
-            imageNameList.set(i,wikiImages.get(i).getUploadImageName());
+        for (int i = 0; i <= wikiImages.size(); i++) {
+            imageNameList.set(i, wikiImages.get(i).getUploadImageName());
         }
         return imageNameList;
     }
 
-
-
     @Override
     public String ModifyMungWikiWithImage(RegisterRequest request, List<MultipartFile> images) {
-        try{
+        try {
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(DogType.valueOf(request.getDogType()));
 
-            if(maybeMungWiki.isEmpty()){
+            if (maybeMungWiki.isEmpty()) {
                 return "해당 견종은 아직 미등록 상태 입니다!, 먼저 정보를 등록해주세요 관리자님!";
-            }else {
+            } else {
                 MungWiki mungWiki = maybeMungWiki.get();
 
-                boolean result = modifyMungWikiLogic(mungWiki,request);
-                if(!result){
+                boolean result = modifyMungWikiLogic(mungWiki, request);
+                if (!result) {
                     return "오류로 인한 수정 실패!";
-                }else {
+                } else {
                     try {
                         List<String> oldImageFileNames = new ArrayList<>();
                         List<String> newImageFileNames = new ArrayList<>();
                         List<WikiImages> wikiImagesList = wikiImagesRepository.findImagesByWikiId(mungWiki.getId());
                         for (int i = 0; i < mungWiki.getWikiImages().size(); i++) {
-                            oldImageFileNames.set(i,mungWiki.getWikiImages().get(i).getOriginalImageName());
+                            oldImageFileNames.set(i, mungWiki.getWikiImages().get(i).getOriginalImageName());
                         }
-                        for (int i=0; i < images.size(); i++){
-                            newImageFileNames.set(i,images.get(i).getOriginalFilename());
+                        for (int i = 0; i < images.size(); i++) {
+                            newImageFileNames.set(i, images.get(i).getOriginalFilename());
                         }
                         for (int i = 0; i < oldImageFileNames.size(); i++) {
                             File webfile = new File("../mung-front/src/assets/wikiDog/" + URLDecoder.decode(oldImageFileNames.get(i), "UTF-8"));
@@ -189,8 +185,8 @@ public class MungWikiServiceImpl implements MungWikiService {
 
                             WikiImages tmpWikiImage = new WikiImages();
                             tmpWikiImage.setOriginalImageName(newImageFileNames.get(i));
-                            tmpWikiImage.setUploadImageName(uuid+newImageFileNames.get(i));
-                            wikiImagesList.set(i,tmpWikiImage);
+                            tmpWikiImage.setUploadImageName(uuid + newImageFileNames.get(i));
+                            wikiImagesList.set(i, tmpWikiImage);
                             wikiImagesRepository.save(tmpWikiImage);
                             mungWiki.setWikiImages(wikiImagesList);
                             mungWikiRepository.save(mungWiki);
@@ -205,35 +201,52 @@ public class MungWikiServiceImpl implements MungWikiService {
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
     }
 
     @Override
     public String ModifyMungWikiWithoutImage(RegisterRequest request) {
-        try{
+        try {
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(DogType.valueOf(request.getDogType()));
 
-            if(maybeMungWiki.isEmpty()){
+            if (maybeMungWiki.isEmpty()) {
                 return "해당 견종은 아직 미등록 상태 입니다!, 먼저 정보를 등록해주세요 관리자님!";
-            }else {
+            } else {
                 MungWiki mungWiki = maybeMungWiki.get();
 
-                boolean result = modifyMungWikiLogic(mungWiki,request);
-                if(!result){
+                boolean result = modifyMungWikiLogic(mungWiki, request);
+                if (!result) {
                     return "오류로 인한 수정 실패!";
-                }else {
+                } else {
                     return "위키 정보 수정 완료!";
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
     }
 
-    private boolean modifyMungWikiLogic(MungWiki mungWiki , RegisterRequest request){
+    @Override
+    public String deleteMungWikiInfo(String dogType) {
+        try {
+            DogType valueOfDogStatus = DogType.valueOfDogStatus(dogType);
+            Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(valueOfDogStatus);
+
+            if (maybeMungWiki.isEmpty()) {
+                return "해당 견종은 아직 등록이 안되어있습니다.";
+            } else {
+                mungWikiRepository.delete(maybeMungWiki.get());
+                return "강이지 정보 초기화가 완료 되었습니다.";
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    private boolean modifyMungWikiLogic(MungWiki mungWiki, RegisterRequest request) {
         try {
             DogStatus dogStatus = mungWiki.getDogStatus();
             WikiDocument document = mungWiki.getWikiDocument();
@@ -262,7 +275,7 @@ public class MungWikiServiceImpl implements MungWikiService {
             mungWiki.setDogStatus(dogStatus);
             mungWikiRepository.save(mungWiki);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
             return false;
         }

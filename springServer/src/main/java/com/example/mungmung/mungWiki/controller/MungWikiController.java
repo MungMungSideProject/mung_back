@@ -55,4 +55,9 @@ public class MungWikiController {
 
         return mungWikiService.ModifyMungWikiWithoutImage(request);
     }
+
+    @DeleteMapping("delete/{dogType}")
+    public String deleteMungWiki(@PathVariable String dogType){
+        return mungWikiService.deleteMungWikiInfo(dogType);
+    }
 }

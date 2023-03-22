@@ -15,9 +15,8 @@ import java.util.Map;
 public interface MungWikiService {
 
     String registerWiki(RegisterRequest request, List<MultipartFile> images);
-
     Map<String,Object> readWikiInfo(DogType dogType);
-
     String ModifyMungWikiWithImage(RegisterRequest request, List<MultipartFile> images);
     String ModifyMungWikiWithoutImage(RegisterRequest request);
+    String deleteMungWikiInfo(String dogType);
 }
