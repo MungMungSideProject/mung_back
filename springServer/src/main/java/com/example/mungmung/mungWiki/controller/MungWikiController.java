@@ -39,4 +39,20 @@ public class MungWikiController {
 
         return mungWikiService.readWikiInfo(valueOfDogType);
     }
+
+    @PostMapping(value = "modify/withImg", consumes = {
+            MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
+    public String modifyWithImg(
+            @RequestPart(value = "images") List<MultipartFile> images,
+            @RequestPart(value = "info") RegisterRequest request){
+
+        return mungWikiService.ModifyMungWikiWithImage(request,images);
+    }
+
+    @PostMapping("modify/withoutImg")
+    public String modifyWithoutImg(@RequestBody RegisterRequest request){
+
+        return mungWikiService.ModifyMungWikiWithoutImage(request);
+    }
 }

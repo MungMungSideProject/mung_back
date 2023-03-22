@@ -16,7 +16,5 @@ public class RegisterRequest {
 
     private Long indoorAdaptLevel;
 
-    private Long totalStatus;
-
     private String documentation;
 }

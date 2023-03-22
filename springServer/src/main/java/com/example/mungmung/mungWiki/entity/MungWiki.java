@@ -22,10 +22,10 @@ public class MungWiki {
     @Column(nullable = false)
     private DogType dogType;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private WikiDocument wikiDocument;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private DogStatus dogStatus;
 
     @OneToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL, orphanRemoval = true)

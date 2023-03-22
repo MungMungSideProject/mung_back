@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface MungWikiRepository extends JpaRepository<MungWiki,Long> {
 
-    @Query("select w from MungWiki w join fetch w.wikiImages where w.dogType = :dogtype")
+    @Query("select w from MungWiki w join fetch w.dogType where w.dogType = :dogType")
     Optional<MungWiki> findByDogType(DogType dogType);
 }
