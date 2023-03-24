@@ -1,5 +1,7 @@
-package com.example.mungmung.memeber.entity;
+package com.example.mungmung.security.entity;
 
+import com.example.mungmung.memeber.entity.Member;
+import com.example.mungmung.security.entity.Authentication;
 import com.example.mungmung.utility.encrypt.EncryptionUtil;
 import com.example.mungmung.utility.password.PasswordHashConverter;
 import jakarta.persistence.Column;

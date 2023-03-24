@@ -1,5 +1,7 @@
 package com.example.mungmung.memeber.entity;
 
+import com.example.mungmung.security.entity.Authentication;
+import com.example.mungmung.security.entity.BasicAuthentication;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,24 +26,19 @@ public class Member {
     @Column
     private String nickName;
 
-    @Column
-    private MemberType memberType;
-
     @OneToOne(fetch =  FetchType.LAZY, orphanRemoval = true)
     private MemberProfile memberProfile;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Authentication> authentications = new HashSet<>();
 
-    public Member(String email,String nickName,MemberType memberType){
+    public Member(String email,String nickName){
         this.email = email;
         this.nickName = nickName;
-        this.memberType = memberType;
     }
-    public Member(String email,String nickName, MemberType memberType, MemberProfile memberProfile ){
+    public Member(String email,String nickName, MemberProfile memberProfile ){
         this.email = email;
         this.nickName = nickName;
-        this.memberType = memberType;
         this.memberProfile =memberProfile;
     }
 
