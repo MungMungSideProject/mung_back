@@ -1,5 +1,6 @@
-package com.example.mungmung.memeber.entity;
+package com.example.mungmung.security.entity;
 
+import com.example.mungmung.memeber.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

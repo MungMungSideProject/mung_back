@@ -1,4 +1,4 @@
-package com.example.mungmung.memeber.service.security;
+package com.example.mungmung.security.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -9,7 +9,7 @@ import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
-public class RedisServiceImpl implements RedisService{
+public class RedisServiceImpl implements RedisService {
 
     private final StringRedisTemplate redisTemplate;
 

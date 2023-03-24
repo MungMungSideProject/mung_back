@@ -1,4 +1,4 @@
-package com.example.mungmung.memeber.service.security;
+package com.example.mungmung.security.service;
 
 public interface RedisService {
     public void setKeyAndValue(String token, Long memNo);
