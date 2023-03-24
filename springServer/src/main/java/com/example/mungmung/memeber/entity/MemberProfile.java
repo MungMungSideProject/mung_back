@@ -1,11 +1,15 @@
 package com.example.mungmung.memeber.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class MemberProfile {
 
 
@@ -20,4 +24,8 @@ public class MemberProfile {
     @OneToMany(mappedBy = "memberProfile", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<MemberPets> pets = new ArrayList<>();
 
+    public MemberProfile(String phoneNumber, List<MemberPets> petsList){
+        this.phoneNumber = phoneNumber;
+        this.pets = petsList;
+    }
 }
