@@ -20,11 +20,11 @@ public class Member {
     @Column(name = "mmeber_ id")
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
-    @Column
-    private String nickName;
+    @Column(nullable = false)
+    private String nickname;
 
     @OneToOne(fetch =  FetchType.LAZY, orphanRemoval = true)
     private MemberProfile memberProfile;
@@ -32,13 +32,13 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Authentication> authentications = new HashSet<>();
 
-    public Member(String email,String nickName){
+    public Member(String email,String nickname){
         this.email = email;
-        this.nickName = nickName;
+        this.nickname = nickname;
     }
-    public Member(String email,String nickName, MemberProfile memberProfile ){
+    public Member(String email,String nickname, MemberProfile memberProfile){
         this.email = email;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.memberProfile =memberProfile;
     }
 

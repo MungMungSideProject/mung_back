@@ -10,9 +10,9 @@ public class SignUpRequest {
 
     private String email;
     private String password;
-    private String nickName;
+    private String nickname;
 
     public Member toMember(){
-        return new Member(email,nickName);
+        return new Member(email,nickname);
     }
 }

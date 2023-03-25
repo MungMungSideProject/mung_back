@@ -1,4 +1,4 @@
-package com.example.mungmung.memeber.service.profile;
+package com.example.mungmung.memeber.service;
 
 import com.example.mungmung.memeber.entity.Member;
 import com.example.mungmung.memeber.entity.MemberPets;
@@ -7,12 +7,10 @@ import com.example.mungmung.memeber.repository.MemberPetRepository;
 import com.example.mungmung.memeber.repository.MemberProfileRepository;
 import com.example.mungmung.memeber.repository.MemberRepository;
 import com.example.mungmung.memeber.request.ProfileRequest;
-import com.example.mungmung.memeber.service.security.RedisService;
+import com.example.mungmung.security.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
-public class ProfileServiceImpl implements ProfileService{
+public class ProfileServiceImpl implements ProfileService {
 
     @Autowired
     MemberRepository memberRepository;
@@ -24,7 +22,7 @@ public class ProfileServiceImpl implements ProfileService{
     RedisService redisService;
 
     @Override
-    public Boolean registerProfileInfo(ProfileRequest request , String token) {
+    public Boolean registerProfileInfo(ProfileRequest request, String token) {
         try {
             Long id = redisService.getValueByKey(token);
             Member member = memberRepository.findByMemberId(id);

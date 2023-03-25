@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 public class MemberProfile {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "profile_id", nullable = false)
