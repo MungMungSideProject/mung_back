@@ -50,7 +50,7 @@ public class MungWikiServiceImpl implements MungWikiService {
                 dogStatus.setSociabilityLevel(request.getSociabilityLevel());
                 dogStatus.setIntelligenceLevel(request.getIntelligenceLevel());
                 dogStatus.setIndoorAdaptLevel(request.getIndoorAdaptLevel());
-
+                dogStatus.setNumOfGranter(1L);
                 mungWiki.setDogStatus(dogStatus);
                 dogStatusRepository.save(dogStatus);
                 // 2.document 설정
