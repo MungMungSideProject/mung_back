@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service
 public interface MemberService {
 
     Boolean signUp(SignUpRequest request);

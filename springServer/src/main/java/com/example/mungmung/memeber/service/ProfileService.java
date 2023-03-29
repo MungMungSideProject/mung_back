@@ -1,4 +1,4 @@
-package com.example.mungmung.memeber.service.profile;
+package com.example.mungmung.memeber.service;
 
 import com.example.mungmung.memeber.request.ProfileRequest;
 

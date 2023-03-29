@@ -9,12 +9,14 @@ import com.example.mungmung.memeber.request.SignInRequest;
 import com.example.mungmung.memeber.request.SignUpRequest;
 import com.example.mungmung.security.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class MemberServiceImpl implements MemberService{
 
     @Autowired
