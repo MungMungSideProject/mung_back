@@ -49,7 +49,7 @@ public class BookMarkServiceImpl implements BookMarkService{
             bookMartRepository.save(bookMark);
         }else{
             BookMark bookMark = maybeBookMark.get();
-            bookMark.setMarkFlag(!bookMark.getLikeFlag());
+            bookMark.setMarkFlag(!bookMark.getMarkFlag());
 
             bookMartRepository.save(bookMark);
         }
