@@ -11,6 +11,8 @@ import com.example.mungmung.mungWiki.request.StatusRequest;
 import com.example.mungmung.security.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class DogStatusServiceImpl implements DogStatusService{
@@ -28,36 +30,57 @@ public class DogStatusServiceImpl implements DogStatusService{
     private MungWikiRepository mungWikiRepository;
 
     @Override
-    public String gradeStatusLevelFromMember(StatusRequest statusRequest , String token) {
+    public Map<Boolean,String> gradeStatusLevelFromMember(StatusRequest statusRequest , String token) {
 
         try {
+            Map<Boolean,String> result = new HashMap<>();
+            // 비정상 로그인 거르기
             Long id = redisService.getValueByKey(token);
-            if(id.equals(null))return "회원 정보 오류";
+            if(id.equals(null)){result.put(false , "there is an unusual approach"); return result;}
 
+            // 강아지 키우기 여부 판단,
+            DogType requestDogType = DogType.valueOfDogStatus(statusRequest.getDogType());
+            Boolean isMemberBreedDog = false;
             Member Member = memberRepository.findByMemberId(id);
+            if(Member.getMemberProfile().getPets().size() == 0 ){
+                result.put(false , "this member not breed pet");
+                return result;
+            }
+            for (int i = 0; i < Member.getMemberProfile().getPets().size(); i++) {
+                DogType memberDogType = Member.getMemberProfile().getPets().get(i).getDogType();
+                if(memberDogType == requestDogType){
+                    isMemberBreedDog = true;
+                    break;
+                }
+            }
+            // 위키 등록 여부 판단,
+            Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(requestDogType);
 
-            DogType dogType = DogType.valueOfDogStatus(statusRequest.getDogType());
-            Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(dogType);
-
-            if(maybeMungWiki.isPresent()){
+            // 실제 점수 할당 로직.
+            if(maybeMungWiki.isPresent() && isMemberBreedDog){
                 MungWiki mungWiki = maybeMungWiki.get();
 
                 DogStatus dogStatus = mungWiki.getDogStatus();
-                Long GranterCnt = dogStatus.getNumOfGranter();
+                Long GranterCnt = dogStatus.getNumOfGranter() + 1;
                 dogStatus.setNumOfGranter(GranterCnt);
 
-                dogStatus.setSheddingLevel(calDogStatusAverage(GranterCnt,dogStatus.getSheddingLevel(),statusRequest.getSheddingLevel()));
-                dogStatus.setActivityLevel(calDogStatusAverage(GranterCnt,dogStatus.getActivityLevel(),statusRequest.getActivityLevel()));
-                dogStatus.setSociabilityLevel(calDogStatusAverage(GranterCnt,dogStatus.getSociabilityLevel(),statusRequest.getSociabilityLevel()));
-                dogStatus.setIntelligenceLevel(calDogStatusAverage(GranterCnt,dogStatus.getIntelligenceLevel(),statusRequest.getIntelligenceLevel()));
-                dogStatus.setIndoorAdaptLevel(calDogStatusAverage(GranterCnt,dogStatus.getIndoorAdaptLevel(),statusRequest.getIndoorAdaptLevel()));
+                dogStatus.setSheddingLevel(calDogLevelAverage(GranterCnt,dogStatus.getSheddingLevel(),statusRequest.getSheddingLevel()));
+                dogStatus.setActivityLevel(calDogLevelAverage(GranterCnt,dogStatus.getActivityLevel(),statusRequest.getActivityLevel()));
+                dogStatus.setSociabilityLevel(calDogLevelAverage(GranterCnt,dogStatus.getSociabilityLevel(),statusRequest.getSociabilityLevel()));
+                dogStatus.setIntelligenceLevel(calDogLevelAverage(GranterCnt,dogStatus.getIntelligenceLevel(),statusRequest.getIntelligenceLevel()));
+                dogStatus.setIndoorAdaptLevel(calDogLevelAverage(GranterCnt,dogStatus.getIndoorAdaptLevel(),statusRequest.getIndoorAdaptLevel()));
 
                 dogStatusRepository.save(dogStatus);
 
-                return "점수 부여 성공,";
+                result.put(true,"grant Status success,");
+                return result;
 
-            }else{
-                return "아직 해당 견종 등록이 안되어 있어 점수 부여가 불가 합니다.";
+            }else if (maybeMungWiki.isEmpty()){
+                result.put(false,"NO Wiki information");
+                return result;
+            } else {
+                result.put(false,"member not breed this DogType : " + requestDogType.toString());
+                return result;
             }
 
 
@@ -66,10 +89,23 @@ public class DogStatusServiceImpl implements DogStatusService{
         }
     }
 
-    private Long calDogStatusAverage(Long granterCnt, Long totalStatus , Long plusStatus){
+    public Long calDogLevelAverage(Long granterCnt, Long totalStatus , Long plusStatus){
         Long average = totalStatus + plusStatus;
         average /= granterCnt;
 
         return average;
+    }
+
+    public Long calDogStatusAverage(DogStatus dogStatus){
+        Long TotalStatus;
+        Long returnAverage;
+        TotalStatus = dogStatus.getActivityLevel();
+        TotalStatus +=dogStatus.getSheddingLevel();
+        TotalStatus +=dogStatus.getIntelligenceLevel();
+        TotalStatus +=dogStatus.getSociabilityLevel();
+        TotalStatus +=dogStatus.getIndoorAdaptLevel();
+
+        returnAverage = TotalStatus/5;
+        return returnAverage;
     }
 }
