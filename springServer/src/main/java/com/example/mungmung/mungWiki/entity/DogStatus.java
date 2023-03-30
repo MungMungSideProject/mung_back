@@ -30,4 +30,15 @@ public class DogStatus {
 
     @Column(nullable = false)
     private Long indoorAdaptLevel;
+
+    @Column(nullable = false)
+    private Long NumOfGranter;
+
+    public DogStatus(Long intelligenceLevel, Long sheddingLevel, Long sociabilityLevel, Long activityLevel, Long indoorAdaptLevel){
+        this.intelligenceLevel = intelligenceLevel;
+        this.sheddingLevel = sheddingLevel;
+        this.sociabilityLevel = sociabilityLevel;
+        this.activityLevel = activityLevel;
+        this.indoorAdaptLevel = indoorAdaptLevel;
+    }
 }
