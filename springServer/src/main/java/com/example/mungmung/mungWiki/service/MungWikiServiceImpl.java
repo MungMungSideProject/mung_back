@@ -1,13 +1,14 @@
 package com.example.mungmung.mungWiki.service;
 
+import com.example.mungmung.memeber.entity.Member;
+import com.example.mungmung.memeber.repository.MemberRepository;
 import com.example.mungmung.mungWiki.entity.*;
-import com.example.mungmung.mungWiki.repository.DogStatusRepository;
-import com.example.mungmung.mungWiki.repository.MungWikiRepository;
-import com.example.mungmung.mungWiki.repository.WikiDocumentRepository;
-import com.example.mungmung.mungWiki.repository.WikiImagesRepository;
+import com.example.mungmung.mungWiki.repository.*;
 import com.example.mungmung.mungWiki.request.RegisterRequest;
+import com.example.mungmung.security.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,13 +34,19 @@ public class MungWikiServiceImpl implements MungWikiService {
     @Autowired
     private WikiImagesRepository wikiImagesRepository;
 
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private BookMartRepository bookMartRepository;
+
     @Override
     public String registerWiki(RegisterRequest request, List<MultipartFile> images) {
         try {
             DogType dogType = DogType.valueOfDogStatus(request.getDogType());
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(dogType);
             if (maybeMungWiki.isPresent()) {
-                return "이미 등록이 완료된 강아지 입니다.";
+                return "already register dogType.";
             } else {
                 MungWiki mungWiki = new MungWiki();
 
@@ -87,7 +94,7 @@ public class MungWikiServiceImpl implements MungWikiService {
                 mungWiki.setWikiImages(wikiImages);
 
                 mungWikiRepository.save(mungWiki);
-                return "새로운 위키 등록 성공!";
+                return "new wiki register success!";
             }
         } catch (Exception e) {
             return e.toString();
@@ -102,7 +109,7 @@ public class MungWikiServiceImpl implements MungWikiService {
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(dogType);
 
             if (maybeMungWiki.isEmpty()) {
-                returnData.put("결과", "해당 견종은 아직 등록 되지 않았습니다");
+                returnData.put("result", "No wiki Information");
             } else {
                 MungWiki MungWikiByDogType = maybeMungWiki.get();
 
@@ -154,13 +161,13 @@ public class MungWikiServiceImpl implements MungWikiService {
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(DogType.valueOf(request.getDogType()));
 
             if (maybeMungWiki.isEmpty()) {
-                return "해당 견종은 아직 미등록 상태 입니다!, 먼저 정보를 등록해주세요 관리자님!";
+                return "No wiki Information";
             } else {
                 MungWiki mungWiki = maybeMungWiki.get();
 
                 boolean result = modifyMungWikiLogic(mungWiki, request);
                 if (!result) {
-                    return "오류로 인한 수정 실패!";
+                    return "failed modify please check error message";
                 } else {
                     try {
                         List<String> oldImageFileNames = new ArrayList<>();
@@ -197,7 +204,7 @@ public class MungWikiServiceImpl implements MungWikiService {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    return "수정 성공!";
+                    return "modify Success!";
                 }
             }
 
@@ -212,15 +219,15 @@ public class MungWikiServiceImpl implements MungWikiService {
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(DogType.valueOf(request.getDogType()));
 
             if (maybeMungWiki.isEmpty()) {
-                return "해당 견종은 아직 미등록 상태 입니다!, 먼저 정보를 등록해주세요 관리자님!";
+                return "No wiki Information";
             } else {
                 MungWiki mungWiki = maybeMungWiki.get();
 
                 boolean result = modifyMungWikiLogic(mungWiki, request);
                 if (!result) {
-                    return "오류로 인한 수정 실패!";
+                    return "failed modify please check error message";
                 } else {
-                    return "위키 정보 수정 완료!";
+                    return "wiki information modify success!";
                 }
             }
 
@@ -236,10 +243,10 @@ public class MungWikiServiceImpl implements MungWikiService {
             Optional<MungWiki> maybeMungWiki = mungWikiRepository.findByDogType(valueOfDogStatus);
 
             if (maybeMungWiki.isEmpty()) {
-                return "해당 견종은 아직 등록이 안되어있습니다.";
+                return "wiki Information not exist";
             } else {
                 mungWikiRepository.delete(maybeMungWiki.get());
-                return "강이지 정보 초기화가 완료 되었습니다.";
+                return "delete wiki info success!";
             }
         } catch (Exception e) {
             throw e;
@@ -277,8 +284,56 @@ public class MungWikiServiceImpl implements MungWikiService {
             return true;
         } catch (Exception e) {
             System.out.println(e);
-            return false;
+            throw e;
         }
+    }
+
+    @Override
+    public List<Map<String,Object>> readWikiInfoLists(String token){
+        final Integer PAGE_SIZE = 10;
+        List<MungWiki> wikiList = mungWikiRepository.findListFirstPage(Pageable.ofSize(PAGE_SIZE));
+
+        try{
+            return getWikiInfoList (wikiList,token);
+        }catch (Exception e){
+            throw  e;
+        }
+    }
+
+    @Override
+    public List<Map<String,Object>> readWikiInfoLists(DogType lastDogType , String token){
+        final Integer PAGE_SIZE = 10;
+        Optional<MungWiki> mungWiki = mungWikiRepository.findByDogType(lastDogType);
+        List<MungWiki> wikiList = mungWikiRepository.findListNextPage(Pageable.ofSize(PAGE_SIZE) , mungWiki.get().getId());
+
+        try{
+            return getWikiInfoList( wikiList,token);
+        }catch (Exception e){
+            throw  e;
+        }
+
+    }
+
+    private List<Map<String, Object>> getWikiInfoList(List<MungWiki> wikiList , String token) {
+        List<Map<String,Object>> responseData = new ArrayList<>();
+        for (int i = 0; i < wikiList.size(); i++) {
+            DogStatusServiceImpl dogStatusService = new DogStatusServiceImpl();
+            Long average = dogStatusService.calDogStatusAverage(wikiList.get(i).getDogStatus());
+            Map<String,Object> dataFrom = new HashMap<>();
+            dataFrom.put("dogType", wikiList.get(i).getDogType());
+            dataFrom.put("thumbnailImg", wikiList.get(i).getWikiImages().get(0).getUploadImageName());
+            dataFrom.put("averageStatus" , average);
+
+            if(!token.equals("") || !token.isEmpty() || token != null){// 로그인 o
+                Long id = redisService.getValueByKey(token);
+                Optional<BookMark> maybeBookMark = bookMartRepository.findByMemberIDAndDogType(id,wikiList.get(i).getDogType());
+                BookMark bookMark = maybeBookMark.get();
+                dataFrom.put("bookmark" , bookMark.getMarkFlag());
+            }
+            responseData.add(dataFrom);
+        }
+
+        return responseData;
     }
 
 }

@@ -56,6 +56,22 @@ public class MungWikiController {
         return mungWikiService.ModifyMungWikiWithoutImage(request);
     }
 
+    @PostMapping("/read/wikiList")
+    public List<Map<String,Object>> readWikiList(@RequestParam(value = "token" , required = false) String token){
+
+        return mungWikiService.readWikiInfoLists(token);
+    }
+
+    @PostMapping("/read/nextPage/wikiList")
+    public List<Map<String,Object>> readWikiList(
+            @RequestParam(value = "token" , required = false) String token,
+            @RequestParam(value = "dogType") String dogType
+    ){
+        DogType dogTypeValue = DogType.valueOfDogStatus(dogType);
+
+        return mungWikiService.readWikiInfoLists(dogTypeValue, token);
+    }
+
     @DeleteMapping("delete/{dogType}")
     public String deleteMungWiki(@PathVariable String dogType){
         return mungWikiService.deleteMungWikiInfo(dogType);
