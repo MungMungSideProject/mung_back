@@ -1,8 +1,8 @@
 package com.example.mungmung.memeber.entity;
 
 import com.example.mungmung.mungWiki.entity.DogType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class MemberPets {
+public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "pet_id", nullable = false)
@@ -26,11 +26,17 @@ public class MemberPets {
     @Column
     private DogType dogType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private MemberProfile memberProfile;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "profile_id")
+//    private MemberProfile memberProfile;
 
-    public MemberPets(String name,Long age,DogType dogType){
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public Pet(Member member, String name, Long age, DogType dogType){
+        this.member = member;
         this.name = name;
         this.age = age;
         this.dogType = dogType;

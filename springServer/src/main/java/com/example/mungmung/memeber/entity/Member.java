@@ -17,7 +17,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mmeber_ id")
+    @Column(name = "member_ id")
     private Long id;
 
     @Column(nullable = false)
@@ -26,8 +26,11 @@ public class Member {
     @Column(nullable = false)
     private String nickname;
 
-    @OneToOne(fetch =  FetchType.LAZY, orphanRemoval = true)
-    private MemberProfile memberProfile;
+//    @OneToOne(fetch =  FetchType.LAZY, orphanRemoval = true)
+//    private MemberProfile memberProfile;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Pet> pets = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Authentication> authentications = new HashSet<>();
@@ -36,11 +39,11 @@ public class Member {
         this.email = email;
         this.nickname = nickname;
     }
-    public Member(String email,String nickname, MemberProfile memberProfile){
-        this.email = email;
-        this.nickname = nickname;
-        this.memberProfile =memberProfile;
-    }
+//    public Member(String email,String nickname, MemberProfile memberProfile){
+//        this.email = email;
+//        this.nickname = nickname;
+//        this.memberProfile =memberProfile;
+//    }
 
     private Optional<Authentication> findBasicAuthentication() {
         return authentications
