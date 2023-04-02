@@ -17,4 +17,6 @@ public interface MungWikiService {
     String ModifyMungWikiWithImage(RegisterRequest request, List<MultipartFile> images);
     String ModifyMungWikiWithoutImage(RegisterRequest request);
     String deleteMungWikiInfo(String dogType);
+    List<Map<String,Object>> readWikiInfoLists(String token);
+    List<Map<String,Object>> readWikiInfoLists(DogType lastDogType , String token);
 }
