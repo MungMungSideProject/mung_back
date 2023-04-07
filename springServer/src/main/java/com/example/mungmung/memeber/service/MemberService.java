@@ -13,4 +13,6 @@ public interface MemberService {
     Map<Boolean,String> signIn(SignInRequest request);
 
     Boolean checkEmailDuplication(String email);
+
+    Boolean checkNicknameDuplication(String nickname);
 }

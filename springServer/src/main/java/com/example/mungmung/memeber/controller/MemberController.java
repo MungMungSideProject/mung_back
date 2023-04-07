@@ -38,4 +38,11 @@ public class MemberController {
 
         return memberService.checkEmailDuplication(email);
     }
+
+    @GetMapping("/nickname-check/{nickname}")
+    public Boolean nicknameValidation(@PathVariable("nickname") String nickname) {
+        log.info("nicknameValidation(): " + nickname);
+
+        return memberService.checkNicknameDuplication(nickname);
+    }
 }

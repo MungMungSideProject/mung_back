@@ -89,5 +89,15 @@ public class MemberServiceImpl implements MemberService{
         }
     }
 
+    @Override
+    public Boolean checkNicknameDuplication(String nickname) {
 
+        Optional<Member> maybeMember = memberRepository.findByNickname(nickname);
+
+        if(maybeMember.isEmpty()){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
