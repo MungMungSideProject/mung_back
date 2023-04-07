@@ -89,5 +89,29 @@ public class MemberServiceImpl implements MemberService{
         }
     }
 
+    @Override
+    public Boolean checkNicknameDuplication(String nickname) {
 
+        Optional<Member> maybeMember = memberRepository.findByNickname(nickname);
+
+        if(maybeMember.isEmpty()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean signOut(String token) {
+
+        redisService.deleteByKey(token);
+
+        Long memberId = redisService.getValueByKey(token);
+
+        if( memberId != null ) {
+            System.out.println("로그아웃 안 됨");
+            return false;
+        }
+        return true;
+    }
 }
