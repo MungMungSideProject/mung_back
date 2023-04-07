@@ -45,4 +45,11 @@ public class MemberController {
 
         return memberService.checkNicknameDuplication(nickname);
     }
+
+    @GetMapping("sign-out/{token}")
+    public Boolean signOut(@PathVariable("token") String token) {
+        log.info("signOut(): " + token);
+
+        return memberService.signOut(token);
+    }
 }

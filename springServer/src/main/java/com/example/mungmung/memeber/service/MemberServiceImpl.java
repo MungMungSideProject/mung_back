@@ -100,4 +100,18 @@ public class MemberServiceImpl implements MemberService{
             return false;
         }
     }
+
+    @Override
+    public Boolean signOut(String token) {
+
+        redisService.deleteByKey(token);
+
+        Long memberId = redisService.getValueByKey(token);
+
+        if( memberId != null ) {
+            System.out.println("로그아웃 안 됨");
+            return false;
+        }
+        return true;
+    }
 }

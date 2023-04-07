@@ -15,4 +15,6 @@ public interface MemberService {
     Boolean checkEmailDuplication(String email);
 
     Boolean checkNicknameDuplication(String nickname);
+
+    Boolean signOut(String token);
 }
